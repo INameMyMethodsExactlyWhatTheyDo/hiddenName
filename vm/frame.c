@@ -50,13 +50,6 @@ void evict(){
     struct fte *fe;
     int pageNo;
     struct thread *t = thread_current();
-    
-    // for(le = list_begin(&ft); le != list_end(&ft); le = list_next(le)){
-    //     fe = list_entry(le, struct fte, elem);
-    //     if(!fe ->d -> inSwap){
-    //         break;
-    //     }
-    // }
     le = list_next(le);
     fe = list_entry(le, struct fte, elem);
 
@@ -70,47 +63,4 @@ void evict(){
     palloc_free_page(fe->frame);
     free(fe);
     return;
-
-    //     struct fte *fe = list_entry(e, struct fte, elem);
-    //     //if (!fte->spte->pinned){
-    //     struct thread *t = thread_current();
-    //     uint32_t pageNo = fe -> d ->upage;
-    //     // if (pagedir_is_accessed(t->pagedir, pageNo)){
-    //     //     pagedir_set_accessed(t->pagedir, pageNo, false);
-    //     // }else{
-    //         if (pagedir_is_dirty(t->pagedir, pageNo) || fte->spte->type == SWAP){
-    //             if (fte->spte->type == MMAP) {
-    //                 lock_acquire(&filesys_lock);
-    //                 file_write_at(fte->spte->file, fte->frame,
-    //                     fte->spte->read_bytes,
-    //                     fte->spte->offset);
-    //                 lock_release(&filesys_lock);
-    //             }else{
-    //                 fte->spte->type = SWAP;
-    //                 fte->spte->swap_index = swap_out(fte->frame);
-    //             }
-    //         }
-    //         fte->spte->is_loaded = false;
-    //         list_remove(&fte->elem);
-    //         pagedir_clear_page(t->pagedir, fte->spte->uva);
-    //         palloc_free_page(fte->frame);
-    //         free(fte);
-    //         return palloc_get_page(flags);
-    //     }
-    // for(le = list_begin(&ft); le != list_end(&ft); le = list_next(le)){
-    //     fe = list_entry(le, struct fte, elem);
-    //     // pageNo = fe ->d ->upage;
-    //     // if(pagedir_is_dirty(t -> pagedir, pageNo)){
-    //     //     // list_remove(e);
-    //     //     // palloc_free_page(frame);
-    //     //     // free(e);
-    //     //     // break;
-            
-    //     //     //skipp
-    //     // }else{
-            
-    //     // }
-
-    // }
-    
 }

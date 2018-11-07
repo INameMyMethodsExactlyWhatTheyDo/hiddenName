@@ -202,17 +202,10 @@ page_fault (struct intr_frame *f)
       ///might be the stackEZ
         test = (uint32_t)esp;
         test = test - (uint32_t)fault_addr;
-        // if(test > *thread_current() -> esp){
-        //   test = (uint32_t)fault_addr - *thread_current() -> esp;
-        // }
         if(test < 4000 || test > UINT32_MAX - 60000){
           add_data(NULL, NULL, pg_round_down(fault_addr), 0, 0, true, true);
           struct data *d = spt_get(&thread_current() -> spt, (fault_addr));
-          // e->upage = pg_round_down(fault_addr);
-          // e->loaded = true;
-          // e->writable = true;
           uint8_t *frame = get_frame(PAL_USER, d);
-
           if (!install_page(d ->upage, frame, d->writable)){
             frame_free(frame);
             return false;
