@@ -4,7 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-
+#include "../lib/kernel/hash.h"
 /* States in a thread's life cycle. */
 enum thread_status
 {
@@ -94,8 +94,6 @@ struct thread
   struct list_elem elem; /* List element. */
 
   struct thread *parent_thread;
-
-
 #ifdef USERPROG
   /* Owned by userprog/process.c. */
   uint32_t *pagedir; /* Page directory. */
@@ -111,6 +109,9 @@ struct thread
   int exit_status;
   struct list_elem child_elem;
   int child_exit_status;
+  struct hash spt;
+  uint32_t *esp;
+
 
 #endif
 

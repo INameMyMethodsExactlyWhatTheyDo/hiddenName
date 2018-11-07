@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "hash.h": "c",
+        "gdt.h": "c",
+        "frame.h": "c",
+        "block.h": "c"
+    }
+}

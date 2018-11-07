@@ -18,6 +18,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "threads/synch.h"
+#include "vm/page.h"
+#include "vm/frame.h"
 
 #define LOGGING_LEVEL 6
 
@@ -148,6 +150,10 @@ start_process(void *file_name_) //TODO: change to semaphore for argument
   volatile bool success;
 
   log(L_TRACE, "start_process()");
+  if(spt_init(&thread_current() -> spt)){
+    
+  }
+  
 
   /* Initialize interrupt frame and load executable. */
   memset(&if_, 0, sizeof if_);
@@ -520,7 +526,6 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
   ASSERT(ofs % PGSIZE == 0);
 
   log(L_TRACE, "load_segment()");
-
   file_seek(file, ofs);
   while (read_bytes > 0 || zero_bytes > 0)
   {
@@ -530,29 +535,17 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
     size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
     size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-    /* Get a page of memory. */
-    uint8_t *kpage = palloc_get_page(PAL_USER);
-    if (kpage == NULL)
-      return false;
 
-    /* Load this page. */
-    if (file_read(file, kpage, page_read_bytes) != (int)page_read_bytes)
-    {
-      palloc_free_page(kpage);
+    if(!add_data(file, ofs, upage, page_read_bytes, page_zero_bytes, writable, false)){
       return false;
     }
-    memset(kpage + page_read_bytes, 0, page_zero_bytes);
+  
 
-    /* Add the page to the process's address space. */
-    if (!install_page(upage, kpage, writable))
-    {
-      palloc_free_page(kpage);
-      return false;
-    }
 
     /* Advance. */
     read_bytes -= page_read_bytes;
     zero_bytes -= page_zero_bytes;
+    ofs += page_read_bytes;
     upage += PGSIZE;
   }
   return true;
@@ -563,7 +556,7 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack(void **esp, char *command_line)
 {
-  char **argv = (char **)palloc_get_page(0);
+  char **argv = (char **)get_frame(0, NULL);
 
   int argc = 0;
   char *saveptr;
@@ -577,7 +570,7 @@ setup_stack(void **esp, char *command_line)
 
   log(L_TRACE, "setup_stack()");
 
-  kpage = palloc_get_page(PAL_USER | PAL_ZERO);
+  kpage = get_frame(PAL_USER | PAL_ZERO, NULL);
   if (kpage != NULL){
     success = install_page(((uint8_t *)PHYS_BASE) - PGSIZE, kpage, true);
     if (success){
@@ -603,7 +596,7 @@ setup_stack(void **esp, char *command_line)
       *esp -= sizeof(void (*)(void));
       *(int *)*esp = 0;
     }else
-      palloc_free_page(kpage);
+      frame_free(kpage);
   }
   return success;
 }

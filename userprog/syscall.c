@@ -56,7 +56,7 @@ void syscall_init(void){
 static void syscall_handler(struct intr_frame *f UNUSED){
   uint32_t syscall_num;
   read_user_mem(&syscall_num, f->esp, sizeof(syscall_num));
-
+  thread_current() -> esp = &f->esp;
   switch (syscall_num){
     /* Halt the operating system. */
     case SYS_HALT:{

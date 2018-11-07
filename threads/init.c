@@ -22,6 +22,7 @@
 #include "threads/palloc.h"
 #include "threads/pte.h"
 #include "threads/thread.h"
+#include "vm/frame.h"
 #ifdef USERPROG
 #include "userprog/process.h"
 #include "userprog/exception.h"
@@ -120,12 +121,15 @@ main (void)
   serial_init_queue ();
   timer_calibrate ();
 
+
 #ifdef FILESYS
   /* Initialize file system. */
   ide_init ();
   locate_block_devices ();
   filesys_init (format_filesys);
 #endif
+  frame_init();
+  swap_init ();
 
   printf ("Boot complete.\n");
 

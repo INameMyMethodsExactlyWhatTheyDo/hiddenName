@@ -1,9 +1,9 @@
 #!/bin/bash
 
 TEST_FILES='
-args-none
-page-parallel
+wait-killed
 '
+#page-parallel
 
 for file in $TEST_FILES; do
 
